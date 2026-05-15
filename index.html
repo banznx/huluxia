@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>帖子展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 100%;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .card-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .card-header .post-id {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .card-detail {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .card-stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            margin-top: 3px;
+        }
+
+        .card-user {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 12px;
+            border: 3px solid #eee;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-nick {
+            font-weight: 600;
+            color: #333;
+            font-size: 15px;
+        }
+
+        .user-level {
+            font-size: 12px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .loading-icon {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .image-container {
+            position: relative;
+        }
+
+        .image-counter {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        .image-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .image-container:hover .image-nav {
+            opacity: 1;
+        }
+
+        .image-nav.prev {
+            left: 10px;
+        }
+
+        .image-nav.next {
+            right: 10px;
+        }
+
+        .image-nav:hover {
+            background: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="card" id="card">
+        <div class="loading">
+            <div class="loading-icon"></div>
+            <p>加载中...</p>
+        </div>
+    </div>
+
+    <script>
+        let postFiles = [];
+        let currentImageIndex = 0;
+
+        async function loadPostFiles() {
+            try {
+                const response = await fetch('posts/');
+                const text = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+                const links = doc.querySelectorAll('a[href$=".json"]');
+                
+                if (links.length > 0) {
+                    postFiles = Array.from(links).map(link => 'posts/' + link.getAttribute('href'));
+                    console.log(`加载到 ${postFiles.length} 个帖子文件`);
+                } else {
+                    console.warn('未找到帖子文件，使用模拟数据');
+                    postFiles = generateMockPosts();
+                }
+            } catch (error) {
+                console.error('加载帖子列表失败:', error);
+                postFiles = generateMockPosts();
+            }
+        }
+
+        function generateMockPosts() {
+            const mockPosts = [];
+            const titles = ['分享我的日常', '今天天气真好', '美食分享', '旅行日记', '学习心得'];
+            const details = ['这是一条测试帖子', '今天心情不错', '分享我的生活', '记录美好的一天'];
+            
+            for (let i = 1; i <= 10; i++) {
+                mockPosts.push({
+                    postID: 10000 + i,
+                    title: titles[i % titles.length],
+                    detail: details[i % details.length],
+                    images: [`https://picsum.photos/400/250?random=${i}`],
+                    hit: Math.floor(Math.random() * 1000),
+                    commentCount: Math.floor(Math.random() * 50),
+                    praise: Math.floor(Math.random() * 200),
+                    user: {
+                        nick: `用户${i}`,
+                        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${i}`,
+                        level: Math.floor(Math.random() * 10) + 1
+                    },
+                    createTime: Date.now()
+                });
+            }
+            return mockPosts;
+        }
+
+        async function loadRandomPost() {
+            if (postFiles.length === 0) {
+                await loadPostFiles();
+            }
+
+            const card = document.getElementById('card');
+            card.innerHTML = `
+                <div class="loading">
+                    <div class="loading-icon"></div>
+                    <p>加载中...</p>
+                </div>
+            `;
+
+            try {
+                let post;
+                const randomIndex = Math.floor(Math.random() * postFiles.length);
+                
+                if (typeof postFiles[randomIndex] === 'string') {
+                    const fileUrl = postFiles[randomIndex];
+                    const response = await fetch(fileUrl);
+                    post = await response.json();
+                } else {
+                    post = postFiles[randomIndex];
+                }
+                
+                window.currentPost = post;
+                displayPost(post);
+            } catch (error) {
+                console.error('加载帖子失败:', error);
+                card.innerHTML = `
+                    <div class="card-header">
+                        <h1>帖子展示</h1>
+                    </div>
+                    <div class="card-content" style="text-align: center; padding: 40px;">
+                        <p style="color: #999;">加载失败，请刷新重试</p>
+                    </div>
+                    <button class="action-btn" onclick="loadRandomPost()">
+                        🔄 重新加载
+                    </button>
+                `;
+            }
+        }
+
+        function getAvatarLetter(nick) {
+            if (!nick) return '👤';
+            const firstChar = nick.charAt(0);
+            if (/[\u4e00-\u9fa5]/.test(firstChar)) {
+                return firstChar;
+            }
+            return firstChar.toUpperCase() || '👤';
+        }
+
+        function getRandomGradient() {
+            const gradients = [
+                'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+                'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+                'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)'
+            ];
+            return gradients[Math.floor(Math.random() * gradients.length)];
+        }
+
+        function displayPost(post) {
+            const images = post?.images || [];
+            const user = post?.user || {};
+            const avatarLetter = getAvatarLetter(user.nick);
+            const avatarGradient = getRandomGradient();
+            const imageCount = images.length;
+            const firstImage = images[0] || '';
+
+            const card = document.getElementById('card');
+            card.innerHTML = `
+                <div class="card-header">
+                    <h1>帖子展示</h1>
+                    <div class="post-id">帖子ID: ${post?.postID || '未知'}</div>
+                </div>
+                
+                <div class="image-container">
+                    <img src="${firstImage}" alt="帖子图片" class="card-image" id="mainImage">
+                    ${imageCount > 0 ? `<div class="image-counter">${imageCount} 张图片</div>` : ''}
+                </div>
+                
+                <div class="card-content">
+                    <h2 class="card-title">${escapeHtml(post?.title || '无标题')}</h2>
+                    <p class="card-detail">${escapeHtml(post?.detail || '无内容')}</p>
+                    
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">👁️ ${post?.hit || 0}</div>
+                            <div class="stat-label">浏览</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">💬 ${post?.commentCount || 0}</div>
+                            <div class="stat-label">评论</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">👍 ${post?.praise || 0}</div>
+                            <div class="stat-label">点赞</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-user">
+                        <img src="${user.avatar || ''}" alt="头像" class="user-avatar">
+                        <div class="user-info">
+                            <div class="user-nick">${escapeHtml(user.nick || '匿名用户')}</div>
+                            <div class="user-level">等级 ${user.level || 1}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="action-btn" onclick="loadRandomPost()">
+                    🎲 随机查看下一条帖子
+                </button>
+            `;
+        }
+
+        function changeImage(direction) {
+            const card = document.getElementById('card');
+            const post = getCurrentPost();
+            if (!post || !post.images || post.images.length <= 1) return;
+
+            currentImageIndex += direction;
+            if (currentImageIndex < 0) currentImageIndex = post.images.length - 1;
+            if (currentImageIndex >= post.images.length) currentImageIndex = 0;
+
+            const mainImage = card.querySelector('#mainImage');
+            const imageCounter = card.querySelector('.image-counter');
+            
+            if (mainImage) {
+                mainImage.src = proxyImage(post.images[currentImageIndex]);
+            }
+            if (imageCounter) {
+                imageCounter.textContent = `${currentImageIndex + 1}/${post.images.length}`;
+            }
+        }
+
+        function getCurrentPost() {
+            return window.currentPost;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        document.addEventListener('DOMContentLoaded', loadRandomPost);
+    </script>
+</body>
+</html>
