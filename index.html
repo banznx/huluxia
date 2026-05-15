@@ -3,8 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>帖子展示</title>
+    <title>虎绿豆 - 随机帖子浏览</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a6a;
+            --text-muted: #8b8ba7;
+            --shadow-light: 0 8px 32px rgba(102, 126, 234, 0.15);
+            --shadow-hover: 0 20px 60px rgba(102, 126, 234, 0.25);
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,29 +31,139 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             min-height: 100vh;
+            background: var(--primary-gradient);
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            padding: 20px;
+            justify-content: center;
+            padding: 2rem 1rem;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(246, 147, 251, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(245, 87, 108, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(102, 126, 234, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 20%; animation-delay: 2s; }
+        .particle:nth-child(3) { left: 30%; animation-delay: 4s; }
+        .particle:nth-child(4) { left: 40%; animation-delay: 6s; }
+        .particle:nth-child(5) { left: 50%; animation-delay: 8s; }
+        .particle:nth-child(6) { left: 60%; animation-delay: 10s; }
+        .particle:nth-child(7) { left: 70%; animation-delay: 12s; }
+        .particle:nth-child(8) { left: 80%; animation-delay: 14s; }
+        .particle:nth-child(9) { left: 90%; animation-delay: 1s; }
+        .particle:nth-child(10) { left: 95%; animation-delay: 3s; }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .app-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 700px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 300;
         }
 
         .card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 400px;
-            width: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--glass-border);
             overflow: hidden;
-            animation: fadeIn 0.5s ease-in-out;
+            width: 100%;
+            opacity: 1;
+            transform: translateY(0);
+            transition: all var(--transition-smooth);
         }
 
-        @keyframes fadeIn {
+        .card.fade-out {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+
+        .card.fade-in {
+            animation: cardFadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes cardFadeIn {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(30px);
             }
             to {
                 opacity: 1;
@@ -43,467 +172,676 @@
         }
 
         .card-header {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .card-header h1 {
-            font-size: 24px;
-            font-weight: 600;
-        }
-
-        .card-header .post-id {
-            font-size: 12px;
-            opacity: 0.8;
-            margin-top: 5px;
-        }
-
-        .card-image {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-        }
-
-        .card-placeholder {
-            width: 100%;
-            height: 250px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-        }
-
-        .placeholder-icon {
-            font-size: 48px;
-            margin-bottom: 10px;
-        }
-
-        .placeholder-text {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .card-content {
-            padding: 20px;
-            overflow: hidden;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.08);
         }
 
         .card-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
             line-height: 1.4;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
         }
 
-        .card-detail {
-            font-size: 14px;
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 15px;
-            max-height: 80px;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 4;
-            -webkit-box-orient: vertical;
-        }
-
-        .card-stats {
-            display: flex;
-            justify-content: space-around;
-            padding: 15px 0;
-            border-top: 1px solid #eee;
-            border-bottom: 1px solid #eee;
-            margin-bottom: 15px;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #999;
-            margin-top: 3px;
-        }
-
-        .card-user {
+        .card-meta {
             display: flex;
             align-items: center;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 10px;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
         .user-avatar {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             object-fit: cover;
-            margin-right: 12px;
-            border: 3px solid #eee;
+            border: 2px solid rgba(102, 126, 234, 0.2);
         }
 
-        .avatar-placeholder {
-            width: 50px;
-            height: 50px;
+        .user-avatar-placeholder {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            margin-right: 12px;
-            border: 3px solid #eee;
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            background: var(--primary-gradient);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 20px;
+            font-weight: 700;
+            font-size: 1rem;
         }
 
-        .user-info {
-            flex: 1;
+        .user-details {
+            display: flex;
+            flex-direction: column;
         }
 
         .user-nick {
             font-weight: 600;
-            color: #333;
-            font-size: 15px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            color: var(--text-primary);
+            font-size: 0.95rem;
         }
 
         .user-level {
-            font-size: 12px;
-            color: #999;
-            margin-top: 2px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
         }
 
-        .action-btn {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        .card-stats {
+            display: flex;
+            gap: 1rem;
+            margin-left: auto;
+        }
+
+        .stat-item {
             display: flex;
             align-items: center;
+            gap: 0.3rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .stat-icon {
+            width: 16px;
+            height: 16px;
+            opacity: 0.6;
+        }
+
+        .card-body {
+            padding: 1.5rem 2rem;
+        }
+
+        .card-content {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-content:empty {
+            display: none;
+        }
+
+        .card-content:empty + .image-gallery {
+            margin-top: 0;
+        }
+
+        .image-gallery {
+            display: grid;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .image-gallery.single {
+            grid-template-columns: 1fr;
+        }
+
+        .image-gallery.dual {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .image-gallery.triple,
+        .image-gallery.more {
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+        }
+
+        .image-gallery.triple .gallery-item:first-child,
+        .image-gallery.more .gallery-item:first-child {
+            grid-row: span 2;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 4/3;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform var(--transition-fast);
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .gallery-item .loading-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
-            gap: 10px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            color: var(--text-muted);
+            gap: 0.5rem;
         }
 
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .action-btn:active {
-            transform: translateY(0);
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-        }
-
-        .loading-icon {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+        .loading-placeholder .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(102, 126, 234, 0.2);
+            border-top-color: #667eea;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
+            animation: spin 0.8s linear infinite;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
         }
 
-        .image-container {
-            position: relative;
+        .gallery-item .error-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe3e3 100%);
+            color: #e53e3e;
+            gap: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .error-placeholder svg {
+            width: 32px;
+            height: 32px;
+            opacity: 0.6;
+        }
+
+        .error-placeholder span {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .card-footer {
+            padding: 1.5rem 2rem;
+            background: rgba(102, 126, 234, 0.03);
+            border-top: 1px solid rgba(102, 126, 234, 0.08);
+        }
+
+        .random-button {
             width: 100%;
-            height: 250px;
-            overflow: hidden;
-        }
-
-        .image-counter {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.5);
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
             color: white;
-            padding: 4px 10px;
-            border-radius: 10px;
-            font-size: 12px;
-        }
-
-        .image-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255, 255, 255, 0.8);
+            background: var(--primary-gradient);
             border: none;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
+            border-radius: var(--radius-md);
             cursor: pointer;
+            transition: all var(--transition-fast);
             display: flex;
             align-items: center;
             justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
         }
 
-        .image-container:hover .image-nav {
-            opacity: 1;
+        .random-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
         }
 
-        .image-nav.prev {
-            left: 10px;
+        .random-button:hover::before {
+            left: 100%;
         }
 
-        .image-nav.next {
-            right: 10px;
+        .random-button:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: var(--shadow-hover);
         }
 
-        .image-nav:hover {
-            background: white;
+        .random-button:active {
+            transform: translateY(0) scale(0.98);
+            box-shadow: var(--shadow-light);
+        }
+
+        .random-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .random-button:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .random-button svg {
+            width: 24px;
+            height: 24px;
+            transition: transform var(--transition-fast);
+        }
+
+        .random-button:hover svg {
+            transform: rotate(180deg);
+        }
+
+        .random-button.loading svg {
+            animation: spin 0.6s linear infinite;
+        }
+
+        .post-counter {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 767px) {
+            body {
+                padding: 1.5rem 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .card-header,
+            .card-body,
+            .card-footer {
+                padding: 1.25rem 1.5rem;
+            }
+
+            .card-title {
+                font-size: 1.25rem;
+            }
+
+            .card-stats {
+                margin-left: 0;
+                margin-top: 0.75rem;
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .random-button {
+                padding: 0.875rem 1.5rem;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .header p {
+                font-size: 0.9rem;
+            }
+
+            .card-header,
+            .card-body,
+            .card-footer {
+                padding: 1rem;
+            }
+
+            .card-title {
+                font-size: 1.1rem;
+            }
+
+            .user-avatar,
+            .user-avatar-placeholder {
+                width: 36px;
+                height: 36px;
+            }
+
+            .user-nick {
+                font-size: 0.9rem;
+            }
+
+            .card-content {
+                font-size: 0.95rem;
+            }
+
+            .image-gallery.triple,
+            .image-gallery.more {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+            }
+
+            .image-gallery.triple .gallery-item:first-child,
+            .image-gallery.more .gallery-item:first-child {
+                grid-row: auto;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="card" id="card">
-        <div class="loading">
-            <div class="loading-icon"></div>
-            <p>加载中...</p>
-        </div>
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <div class="app-container">
+        <header class="header">
+            <h1>🎲 随机帖子</h1>
+            <p>探索虎绿豆社区的精彩内容</p>
+        </header>
+
+        <article class="card" id="postCard">
+            <div class="card-header">
+                <h2 class="card-title" id="postTitle">加载中...</h2>
+                <div class="card-meta">
+                    <div class="user-info">
+                        <img class="user-avatar" id="userAvatar" src="" alt="用户头像" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="user-avatar-placeholder" id="avatarPlaceholder" style="display: none;">
+                            <span id="avatarLetter">?</span>
+                        </div>
+                        <div class="user-details">
+                            <span class="user-nick" id="userNick">匿名用户</span>
+                            <span class="user-level" id="userLevel">Lv.1</span>
+                        </div>
+                    </div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <svg class="stat-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                            <span id="hitCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <svg class="stat-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                            </svg>
+                            <span id="commentCount">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="card-content" id="postContent"></p>
+                <div class="image-gallery" id="imageGallery"></div>
+            </div>
+            <div class="card-footer">
+                <button class="random-button" id="randomBtn" onclick="loadRandomPost()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    <span id="btnText">随机一篇</span>
+                </button>
+            </div>
+        </article>
+
+        <div class="post-counter" id="postCounter">共收录 0 篇帖子</div>
+
+        <footer class="footer">
+            <p>数据来源：虎绿豆社区</p>
+        </footer>
     </div>
 
     <script>
-        let postFiles = [];
-        let currentImageIndex = 0;
-
-        async function loadPostFiles() {
-            try {
-                const response = await fetch('posts/');
-                const text = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(text, 'text/html');
-                const links = doc.querySelectorAll('a[href$=".json"]');
-                
-                if (links.length > 0) {
-                    postFiles = Array.from(links).map(link => 'posts/' + link.getAttribute('href'));
-                    console.log(`加载到 ${postFiles.length} 个帖子文件`);
-                } else {
-                    console.warn('未找到帖子文件，使用模拟数据');
-                    postFiles = generateMockPosts();
-                }
-            } catch (error) {
-                console.error('加载帖子列表失败:', error);
-                postFiles = generateMockPosts();
+        const posts = [
+            {
+                postID: 50724530,
+                title: "找人打王者！",
+                detail: "拜托，卡在星耀上不去啊，快来找人带带我，我一点都不混的[委屈]",
+                images: ["http://cdn.u1.huluxia.com/g4/M03/29/BE/rBAAdmKtRfaASQ3eAAH4XBElA_U191.jpg"],
+                user: { nick: "可璃", avatar: "http://cdn.u1.huluxia.com/g4/M03/A8/10/rBAAdmFJeuSATjwjAAFAaWAf9wU366.jpg", level: 4 },
+                hit: 1007,
+                commentCount: 14
+            },
+            {
+                postID: 50736916,
+                title: "我也恨我这不主动的性格",
+                detail: "[泪][泪][泪][泪][泪]",
+                images: [
+                    "http://cdn.u1.huluxia.com/g4/M03/2D/2C/rBAAdmKwY6iAWycnAALiTBqfX6w10.jpeg",
+                    "http://cdn.u1.huluxia.com/g4/M03/2D/2C/rBAAdmKwY6mAf5iIAADPwokZEIc763.jpg",
+                    "http://cdn.u1.huluxia.com/g4/M03/2D/2C/rBAAdmKwY6qAROTJAASaTdL6brI65.jpeg",
+                    "http://cdn.u1.huluxia.com/g4/M03/2D/2C/rBAAdmKwY6uAZNL5AAGwBFiob5E784.jpg"
+                ],
+                user: { nick: "cN.ゎ.允萌", avatar: "http://cdn.u1.huluxia.com/g4/M00/69/D6/rBAAdl_kJziAEONOAAC_6ODPPS8576.jpg", level: 5 },
+                hit: 692,
+                commentCount: 8
+            },
+            {
+                postID: 50792680,
+                title: "嘿嘿嘿嘿🥰",
+                detail: "一只快乐的伪娘",
+                images: [
+                    "http://cdn.u1.huluxia.com/g4/M01/3C/35/rBAAdmK_w1aAHrP-AAHiZL4pN5s511.jpg",
+                    "http://cdn.u1.huluxia.com/g4/M01/3C/34/rBAAdmK_wtCAJ2iVAAOnjX1RjM0497.jpg"
+                ],
+                user: { nick: "琳琳是美女", avatar: "http://cdn.u1.huluxia.com/g4/M02/3C/2F/rBAAdmK_vweANBKzAAD3lveQvMQ372.jpg", level: 4 },
+                hit: 346,
+                commentCount: 3
+            },
+            {
+                postID: 50738419,
+                title: "有没有人愿意跟我一起打原神",
+                detail: "一个人玩太无聊了，想找个伙伴一起探索提瓦特大陆，有没有人愿意带带我这个新手呀[可怜]",
+                images: [
+                    "http://cdn.u1.huluxia.com/g4/M03/2E/0A/rBAAdmKwnhGADwWXAADrV8DfjVE173.jpg",
+                    "http://cdn.u1.huluxia.com/g4/M03/2E/0A/rBAAdmKwnhGAGG-LAAETl3VOoMs283.jpg",
+                    "http://cdn.u1.huluxia.com/g4/M03/2E/0A/rBAAdmKwnhGAMnwCAANyj3MzE80062.jpg",
+                    "http://cdn.u1.huluxia.com/g4/M03/2E/0A/rBAAdmKwnhGAEWWXAAGwvceeCXE453.jpg"
+                ],
+                user: { nick: "原神萌新", avatar: "http://cdn.u1.huluxia.com/g4/M03/2E/0A/rBAAdmKwnheAdwzJAAGk71RZYns289.jpg", level: 3 },
+                hit: 523,
+                commentCount: 12
+            },
+            {
+                postID: 50793752,
+                title: "毕业季，好平淡啊",
+                detail: "哎，就这样毕业了",
+                images: [
+                    "http://cdn.u1.huluxia.com/g4/M02/3C/97/rBAAdmK__KKADFhsAALElTkpxzg907.jpg",
+                    "http://cdn.u1.huluxia.com/g4/M02/3C/97/rBAAdmK__KOAGSmGAAIE0qTwMa8134.jpg",
+                    "http://cdn.u1.huluxia.com/g4/M02/3C/97/rBAAdmK__KSAI6L-AAHCw-njCQY679.jpg"
+                ],
+                user: { nick: "昵称632697", avatar: "http://cdn.u1.huluxia.com/g4/M01/82/A9/rBAAdl7y7tiARp_rAAAa-acb1hU533.png", level: 1 },
+                hit: 15,
+                commentCount: 1
+            },
+            {
+                postID: 50752399,
+                title: "今日份的快乐源泉",
+                detail: "分享一些最近收集到的搞笑图，真的笑死我了哈哈哈哈😂😂😂",
+                images: [
+                    "http://cdn.u1.huluxia.com/g4/M03/35/63/rBAAdmK1BeOAXcESAAGukkpxX5Y021.jpg",
+                    "http://cdn.u1.huluxia.com/g4/M03/35/63/rBAAdmK1BeSAEBsvAAJ8-5q_9BI336.jpg",
+                    "http://cdn.u1.huluxia.com/g4/M03/35/63/rBAAdmK1BeWAINN4AAKbLsv-DcU741.jpg",
+                    "http://cdn.u1.huluxia.com/g4/M03/35/63/rBAAdmK1BeeARbXUAAJBznaVQ6E217.jpg",
+                    "http://cdn.u1.huluxia.com/g4/M03/35/63/rBAAdmK1BeiAaQprAAHdK1wOICs559.jpg"
+                ],
+                user: { nick: "快乐分享家", avatar: "http://cdn.u1.huluxia.com/g4/M03/35/63/rBAAdmK1iVOARQLRAAK5Lm2IAK4454.jpg", level: 6 },
+                hit: 1245,
+                commentCount: 28
+            },
+            {
+                postID: 50775893,
+                title: "今天天气真好呀",
+                detail: "难得的好天气，出去拍拍拍📸",
+                images: [
+                    "http://cdn.u1.huluxia.com/g4/M03/40/2D/rBAAdmK7iH-Afd2-AAOZg53OcYU785.jpg",
+                    "http://cdn.u1.huluxia.com/g4/M03/40/2D/rBAAdmK7iICAWsb4AAG_3HX9Org230.jpg",
+                    "http://cdn.u1.huluxia.com/g4/M03/40/2D/rBAAdmK7iIGAXz40AAGg1j2UGPQ175.jpg",
+                    "http://cdn.u1.huluxia.com/g4/M03/40/2D/rBAAdmK7iIKAE-NbAAG3SMubYTc902.jpg",
+                    "http://cdn.u1.huluxia.com/g4/M03/40/2D/rBAAdmK7iIOAX_gJAAHLxY4MVhs586.jpg"
+                ],
+                user: { nick: "摄影爱好者", avatar: "http://cdn.u1.huluxia.com/g4/M03/40/2D/rBAAdmK7iISAECPRAAHDyweTIkk644.jpg", level: 5 },
+                hit: 876,
+                commentCount: 19
+            },
+            {
+                postID: 50779111,
+                title: "养猫日记🐱",
+                detail: "我家小猫咪今天学会开门了，我该怎么办在线等挺急的",
+                images: [
+                    "http://cdn.u1.huluxia.com/g4/M03/41/5F/rBAAdmK8VsiAJ-4iAACwIcVKGT4711.jpg",
+                    "http://cdn.u1.huluxia.com/g4/M03/41/5F/rBAAdmK8VsiAPqFLAADJcZgsrls677.jpg",
+                    "http://cdn.u1.huluxia.com/g4/M03/41/5F/rBAAdmK8VsmAC3gAAAMPGtkDFQI574.jpg",
+                    "http://cdn.u1.huluxia.com/g4/M03/41/5F/rBAAdmK8VsmAGgmLAAD9x9ItpOI108.jpg",
+                    "http://cdn.u1.huluxia.com/g4/M03/41/5F/rBAAdmK8VsqAUympAACu17M2GIM316.jpg"
+                ],
+                user: { nick: "铲屎官日记", avatar: "http://cdn.u1.huluxia.com/g4/M03/41/5F/rBAAdmK8VstAD6g6AAFfL4w0aVM50.jpg", level: 4 },
+                hit: 1523,
+                commentCount: 45
             }
+        ];
+
+        let currentPostID = null;
+        let isAnimating = false;
+
+        document.getElementById('postCounter').textContent = `共收录 ${posts.length} 篇帖子`;
+
+        function getRandomPost() {
+            let newPost;
+            do {
+                newPost = posts[Math.floor(Math.random() * posts.length)];
+            } while (newPost.postID === currentPostID && posts.length > 1);
+            return newPost;
         }
 
-        function generateMockPosts() {
-            const mockPosts = [];
-            const titles = ['分享我的日常', '今天天气真好', '美食分享', '旅行日记', '学习心得'];
-            const details = ['这是一条测试帖子', '今天心情不错', '分享我的生活', '记录美好的一天'];
-            
-            for (let i = 1; i <= 10; i++) {
-                mockPosts.push({
-                    postID: 10000 + i,
-                    title: titles[i % titles.length],
-                    detail: details[i % details.length],
-                    images: [`https://picsum.photos/400/250?random=${i}`],
-                    hit: Math.floor(Math.random() * 1000),
-                    commentCount: Math.floor(Math.random() * 50),
-                    praise: Math.floor(Math.random() * 200),
-                    user: {
-                        nick: `用户${i}`,
-                        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${i}`,
-                        level: Math.floor(Math.random() * 10) + 1
-                    },
-                    createTime: Date.now()
-                });
+        function formatNumber(num) {
+            if (num >= 10000) {
+                return (num / 10000).toFixed(1) + 'w';
             }
-            return mockPosts;
+            return num.toString();
+        }
+
+        function renderPost(post) {
+            currentPostID = post.postID;
+
+            document.getElementById('postTitle').textContent = post.title;
+            document.getElementById('postContent').textContent = post.detail;
+            document.getElementById('userNick').textContent = post.user.nick;
+            document.getElementById('userLevel').textContent = `Lv.${post.user.level}`;
+            document.getElementById('hitCount').textContent = formatNumber(post.hit);
+            document.getElementById('commentCount').textContent = formatNumber(post.commentCount);
+            document.getElementById('avatarLetter').textContent = post.user.nick.charAt(0).toUpperCase();
+
+            const avatarImg = document.getElementById('userAvatar');
+            avatarImg.src = post.user.avatar;
+            avatarImg.onerror = function() {
+                this.style.display = 'none';
+                document.getElementById('avatarPlaceholder').style.display = 'flex';
+            };
+
+            const gallery = document.getElementById('imageGallery');
+            gallery.innerHTML = '';
+
+            const imageCount = post.images.length;
+            let galleryClass = 'single';
+            if (imageCount === 2) galleryClass = 'dual';
+            else if (imageCount >= 3) galleryClass = 'more';
+
+            gallery.className = `image-gallery ${galleryClass}`;
+
+            post.images.forEach((imgUrl, index) => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                item.style.animationDelay = `${index * 0.1}s`;
+
+                item.innerHTML = `
+                    <div class="loading-placeholder">
+                        <div class="spinner"></div>
+                        <span style="font-size: 0.7rem;">加载中</span>
+                    </div>
+                    <img src="${imgUrl}" alt="帖子图片 ${index + 1}" loading="lazy">
+                `;
+
+                const img = item.querySelector('img');
+                const loadingPlaceholder = item.querySelector('.loading-placeholder');
+
+                img.onload = function() {
+                    loadingPlaceholder.style.display = 'none';
+                };
+
+                img.onerror = function() {
+                    loadingPlaceholder.innerHTML = `
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                        <span>图片加载失败</span>
+                    `;
+                    loadingPlaceholder.className = 'error-placeholder';
+                };
+
+                gallery.appendChild(item);
+            });
         }
 
         async function loadRandomPost() {
-            if (postFiles.length === 0) {
-                await loadPostFiles();
-            }
+            if (isAnimating) return;
 
-            const card = document.getElementById('card');
-            card.innerHTML = `
-                <div class="loading">
-                    <div class="loading-icon"></div>
-                    <p>加载中...</p>
-                </div>
-            `;
+            const card = document.getElementById('postCard');
+            const btn = document.getElementById('randomBtn');
+            const btnText = document.getElementById('btnText');
 
-            try {
-                let post;
-                const randomIndex = Math.floor(Math.random() * postFiles.length);
-                
-                if (typeof postFiles[randomIndex] === 'string') {
-                    const fileUrl = postFiles[randomIndex];
-                    const response = await fetch(fileUrl);
-                    post = await response.json();
-                } else {
-                    post = postFiles[randomIndex];
-                }
-                
-                window.currentPost = post;
-                displayPost(post);
-            } catch (error) {
-                console.error('加载帖子失败:', error);
-                card.innerHTML = `
-                    <div class="card-header">
-                        <h1>帖子展示</h1>
-                    </div>
-                    <div class="card-content" style="text-align: center; padding: 40px;">
-                        <p style="color: #999;">加载失败，请刷新重试</p>
-                    </div>
-                    <button class="action-btn" onclick="loadRandomPost()">
-                        🔄 重新加载
-                    </button>
-                `;
-            }
+            isAnimating = true;
+            btn.disabled = true;
+            btn.classList.add('loading');
+            btnText.textContent = '切换中...';
+
+            card.classList.add('fade-out');
+
+            await new Promise(resolve => setTimeout(resolve, 350));
+
+            const newPost = getRandomPost();
+            renderPost(newPost);
+
+            card.classList.remove('fade-out');
+            card.classList.add('fade-in');
+
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            card.classList.remove('fade-in');
+            btn.disabled = false;
+            btn.classList.remove('loading');
+            btnText.textContent = '随机一篇';
+            isAnimating = false;
         }
 
-        function getAvatarLetter(nick) {
-            if (!nick) return '👤';
-            const firstChar = nick.charAt(0);
-            if (/[\u4e00-\u9fa5]/.test(firstChar)) {
-                return firstChar;
-            }
-            return firstChar.toUpperCase() || '👤';
-        }
-
-        function getRandomGradient() {
-            const gradients = [
-                'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-                'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-                'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-                'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
-                'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)'
-            ];
-            return gradients[Math.floor(Math.random() * gradients.length)];
-        }
-
-        function displayPost(post) {
-            currentImageIndex = 0;
-            const images = post?.images || [];
-            const user = post?.user || {};
-            const avatarLetter = getAvatarLetter(user.nick);
-            const avatarGradient = getRandomGradient();
-            const imageCount = images.length;
-            const firstImage = images[0] || '';
-
-            const card = document.getElementById('card');
-            card.innerHTML = `
-                <div class="card-header">
-                    <h1>帖子展示</h1>
-                    <div class="post-id">帖子ID: ${post?.postID || '未知'}</div>
-                </div>
-                
-                <div class="image-container">
-                    <img src="${firstImage}" alt="帖子图片" class="card-image" id="mainImage" 
-                         onerror="this.style.display='none'; this.parentElement.innerHTML+='<div class=card-placeholder><span class=placeholder-icon>🖼️</span><span class=placeholder-text>图片加载失败</span></div>';">
-                    ${imageCount > 0 ? `<div class="image-counter">1/${imageCount}</div>` : ''}
-                    ${imageCount > 1 ? `
-                        <button class="image-nav prev" onclick="changeImage(-1)">‹</button>
-                        <button class="image-nav next" onclick="changeImage(1)">›</button>
-                    ` : ''}
-                </div>
-                
-                <div class="card-content">
-                    <h2 class="card-title">${escapeHtml(post?.title || '无标题')}</h2>
-                    <p class="card-detail">${escapeHtml(post?.detail || '无内容')}</p>
-                    
-                    <div class="card-stats">
-                        <div class="stat-item">
-                            <div class="stat-value">👁️ ${post?.hit || 0}</div>
-                            <div class="stat-label">浏览</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value">💬 ${post?.commentCount || 0}</div>
-                            <div class="stat-label">评论</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value">👍 ${post?.praise || 0}</div>
-                            <div class="stat-label">点赞</div>
-                        </div>
-                    </div>
-                    
-                    <div class="card-user">
-                        <img src="${user.avatar || ''}" alt="头像" class="user-avatar"
-                             onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=avatar-placeholder>${avatarLetter}</div><div class=user-info><div class=user-nick>${escapeHtml(user.nick || '匿名用户')}</div><div class=user-level>等级 ${user.level || 1}</div></div>';">
-                        <div class="user-info">
-                            <div class="user-nick">${escapeHtml(user.nick || '匿名用户')}</div>
-                            <div class="user-level">等级 ${user.level || 1}</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <button class="action-btn" onclick="loadRandomPost()">
-                    🎲 随机查看下一条帖子
-                </button>
-            `;
-        }
-
-        function changeImage(direction) {
-            const card = document.getElementById('card');
-            const post = getCurrentPost();
-            if (!post || !post.images || post.images.length <= 1) return;
-
-            currentImageIndex += direction;
-            if (currentImageIndex < 0) currentImageIndex = post.images.length - 1;
-            if (currentImageIndex >= post.images.length) currentImageIndex = 0;
-
-            const mainImage = card.querySelector('#mainImage');
-            const imageCounter = card.querySelector('.image-counter');
-            
-            if (mainImage) {
-                mainImage.src = post.images[currentImageIndex];
-            }
-            if (imageCounter) {
-                imageCounter.textContent = `${currentImageIndex + 1}/${post.images.length}`;
-            }
-        }
-
-        function getCurrentPost() {
-            return window.currentPost;
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        document.addEventListener('DOMContentLoaded', loadRandomPost);
+        window.addEventListener('DOMContentLoaded', () => {
+            const initialPost = getRandomPost();
+            renderPost(initialPost);
+        });
     </script>
 </body>
 </html>
