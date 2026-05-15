@@ -53,7 +53,7 @@
         .image-container img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
             transition: transform 0.3s ease;
         }
 
@@ -70,6 +70,7 @@
             justify-content: space-between;
             padding: 0 15px;
             pointer-events: none;
+            z-index: 10;
         }
 
         .nav-btn {
@@ -427,16 +428,22 @@
             document.getElementById('stat-likes').textContent = currentPost.praise || 0;
             
             if (currentPost.user) {
-                document.getElementById('user-name').textContent = currentPost.user.nick || '匿名用户';
+                const nick = currentPost.user.nick || '匿名用户';
+                document.getElementById('user-name').textContent = nick;
                 
                 const age = currentPost.user.age ? `${currentPost.user.age}岁` : '';
                 const level = currentPost.user.level ? `Lv.${currentPost.user.level}` : '';
                 document.getElementById('user-meta').textContent = [age, level].filter(Boolean).join(' · ') || '普通用户';
                 
-                if (currentPost.user.avatar) {
-                    const avatarDiv = document.getElementById('user-avatar');
-                    avatarDiv.innerHTML = `<img src="${currentPost.user.avatar}" alt="头像" onerror="this.style.display='none'">`;
-                }
+                const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe', '#43e97b', '#38f9d7', '#fa709a', '#fee140'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                const initial = nick.charAt(0).toUpperCase();
+                const avatarDiv = document.getElementById('user-avatar');
+                avatarDiv.innerHTML = `
+                    <div style="width: 100%; height: 100%; border-radius: 50%; background: ${randomColor}; display: flex; justify-content: center; align-items: center; color: white; font-size: 18px; font-weight: 600;">
+                        ${initial}
+                    </div>
+                `;
             }
             
             updateImages();
@@ -472,10 +479,11 @@
             
             const imageUrl = images[currentImageIndex];
             const imageName = imageUrl.split('/').pop();
-            const localImagePath = IMAGES_DIR + imageName;
+            const postID = currentPost.postID || '';
+            const localImagePath = IMAGES_DIR + postID + '_' + imageName;
             
             imageContainer.innerHTML = `
-                <img src="${localImagePath}" alt="帖子图片" onerror="this.src='${imageUrl}'">
+                <img src="${localImagePath}" alt="帖子图片">
             `;
             
             indicator.innerHTML = images.map((_, index) => 
