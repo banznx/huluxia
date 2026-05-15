@@ -369,23 +369,18 @@
     </div>
 
     <script>
-        const POSTS_DIR = 'huluxia/posts2/';
-        const IMAGES_DIR = 'huluxia/images/downloaded_images/';
+        const POSTS_DIR = 'posts2/';
+        const IMAGES_DIR = 'images/downloaded_posts_images/';
         
         let currentPost = null;
         let currentImageIndex = 0;
 
         async function getPostList() {
             try {
-                const response = await fetch(POSTS_DIR);
+                const response = await fetch(POSTS_DIR + 'index.json');
                 if (!response.ok) throw new Error('Failed to fetch post list');
                 
-                const html = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const links = doc.querySelectorAll('a[href$=".json"]');
-                
-                return Array.from(links).map(link => link.getAttribute('href'));
+                return await response.json();
             } catch (error) {
                 console.error('Error fetching post list:', error);
                 return [];
