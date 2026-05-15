@@ -4,7 +4,7 @@
 
 ## 🌐 在线访问
 
-[https://banznx.github.io/huluxia/](https://banznx.github.io/huluxia/)
+点击右侧page页面即可访问
 
 ## 功能特性
 
