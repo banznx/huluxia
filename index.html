@@ -64,16 +64,32 @@
             width: 100%;
             height: 250px;
             object-fit: cover;
+        }
+
+        .card-placeholder {
+            width: 100%;
+            height: 250px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             color: white;
+        }
+
+        .placeholder-icon {
             font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .placeholder-text {
+            font-size: 14px;
+            opacity: 0.9;
         }
 
         .card-content {
             padding: 20px;
+            overflow: hidden;
         }
 
         .card-title {
@@ -82,6 +98,9 @@
             color: #333;
             margin-bottom: 10px;
             line-height: 1.4;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .card-detail {
@@ -89,6 +108,11 @@
             color: #666;
             line-height: 1.6;
             margin-bottom: 15px;
+            max-height: 80px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
         }
 
         .card-stats {
@@ -131,6 +155,14 @@
             object-fit: cover;
             margin-right: 12px;
             border: 3px solid #eee;
+        }
+
+        .avatar-placeholder {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 12px;
+            border: 3px solid #eee;
             background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
             display: flex;
             align-items: center;
@@ -147,6 +179,9 @@
             font-weight: 600;
             color: #333;
             font-size: 15px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .user-level {
@@ -203,6 +238,9 @@
 
         .image-container {
             position: relative;
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
         }
 
         .image-counter {
@@ -375,6 +413,7 @@
         }
 
         function displayPost(post) {
+            currentImageIndex = 0;
             const images = post?.images || [];
             const user = post?.user || {};
             const avatarLetter = getAvatarLetter(user.nick);
@@ -390,8 +429,13 @@
                 </div>
                 
                 <div class="image-container">
-                    <img src="${firstImage}" alt="帖子图片" class="card-image" id="mainImage">
-                    ${imageCount > 0 ? `<div class="image-counter">${imageCount} 张图片</div>` : ''}
+                    <img src="${firstImage}" alt="帖子图片" class="card-image" id="mainImage" 
+                         onerror="this.style.display='none'; this.parentElement.innerHTML+='<div class=card-placeholder><span class=placeholder-icon>🖼️</span><span class=placeholder-text>图片加载失败</span></div>';">
+                    ${imageCount > 0 ? `<div class="image-counter">1/${imageCount}</div>` : ''}
+                    ${imageCount > 1 ? `
+                        <button class="image-nav prev" onclick="changeImage(-1)">‹</button>
+                        <button class="image-nav next" onclick="changeImage(1)">›</button>
+                    ` : ''}
                 </div>
                 
                 <div class="card-content">
@@ -414,7 +458,8 @@
                     </div>
                     
                     <div class="card-user">
-                        <img src="${user.avatar || ''}" alt="头像" class="user-avatar">
+                        <img src="${user.avatar || ''}" alt="头像" class="user-avatar"
+                             onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=avatar-placeholder>${avatarLetter}</div><div class=user-info><div class=user-nick>${escapeHtml(user.nick || '匿名用户')}</div><div class=user-level>等级 ${user.level || 1}</div></div>';">
                         <div class="user-info">
                             <div class="user-nick">${escapeHtml(user.nick || '匿名用户')}</div>
                             <div class="user-level">等级 ${user.level || 1}</div>
@@ -441,7 +486,7 @@
             const imageCounter = card.querySelector('.image-counter');
             
             if (mainImage) {
-                mainImage.src = proxyImage(post.images[currentImageIndex]);
+                mainImage.src = post.images[currentImageIndex];
             }
             if (imageCounter) {
                 imageCounter.textContent = `${currentImageIndex + 1}/${post.images.length}`;
